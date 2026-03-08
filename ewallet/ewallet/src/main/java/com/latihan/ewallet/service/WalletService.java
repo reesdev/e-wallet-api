@@ -70,6 +70,19 @@ public class WalletService {
 
         return mapToResponse(wallet);
     }
+    public WalletResponse transfer(Long fromId, Long toId, Integer amount) {
 
+        Wallet fromWallet = findWallet(fromId);
+        Wallet toWallet = findWallet(toId);
+
+        if (fromWallet.getBalance() < amount) {
+            throw new RuntimeException("Insufficient balance");
+        }
+
+        fromWallet.setBalance(fromWallet.getBalance() - amount);
+        toWallet.setBalance(toWallet.getBalance() + amount);
+
+        return mapToResponse(fromWallet);
+    }
 
 }
