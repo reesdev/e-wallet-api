@@ -80,7 +80,6 @@ public class WalletService {
         if (fromWallet.getBalance() < amount) {
             throw new RuntimeException("Insufficient balance");
         }
-
         fromWallet.setBalance(fromWallet.getBalance() - amount);
         toWallet.setBalance(toWallet.getBalance() + amount);
 
