@@ -72,13 +72,7 @@ public class WalletService {
     }
     public WalletResponse transfer(Long fromId, Long toId, Integer amount) {
 
-        if (fromId.equals(toId)) {
-            throw new RuntimeException("Cannot transfer to the same wallet");
-        }
-
-        if (amount <= 0) {
-            throw new RuntimeException("Amount must be greater than zero");
-        }
+        validateTransfer(fromId, toId, amount);
 
         Wallet fromWallet = findWallet(fromId);
         Wallet toWallet = findWallet(toId);
@@ -91,6 +85,16 @@ public class WalletService {
         toWallet.setBalance(toWallet.getBalance() + amount);
 
         return mapToResponse(fromWallet);
+    }
+    private void validateTransfer(Long fromId, Long toId, Integer amount){
+
+        if (fromId.equals(toId)) {
+            throw new RuntimeException("Cannot transfer to the same wallet");
+        }
+
+        if (amount <= 0) {
+            throw new RuntimeException("Amount must be greater than zero");
+        }
     }
 
 }
