@@ -5,7 +5,6 @@ import com.latihan.ewallet.dto.WalletResponse;
 import com.latihan.ewallet.entity.Wallet;
 import com.latihan.ewallet.exception.WalletNotFoundException;
 import com.latihan.ewallet.repository.WalletRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,6 @@ public class WalletService {
         response.setId(wallet.getId());
         response.setOwner(wallet.getOwner());
         response.setBalance(wallet.getBalance());
-//        BeanUtils.copyProperties(wallet, response);
 
         return response;
     }
@@ -50,10 +48,15 @@ public class WalletService {
     public WalletResponse getWallet(Long id){
 
         Wallet wallet = findWallet(id);
+
         return mapToResponse(wallet);
     }
 
     public WalletResponse topUp(Long id, Integer amount){
+
+        if(amount <= 0){
+            throw new RuntimeException("Topup amount must be greater than zero");
+        }
 
         Wallet wallet = findWallet(id);
 
@@ -64,36 +67,42 @@ public class WalletService {
 
     public WalletResponse pay(Long id, Integer amount){
 
+        if(amount <= 0){
+            throw new RuntimeException("Payment amount must be greater than zero");
+        }
+
         Wallet wallet = findWallet(id);
+
+        if(wallet.getBalance() < amount){
+            throw new RuntimeException("Insufficient balance");
+        }
 
         wallet.setBalance(wallet.getBalance() - amount);
 
         return mapToResponse(wallet);
     }
-    public WalletResponse transfer(Long fromId, Long toId, Integer amount) {
 
-        validateTransfer(fromId, toId, amount);
+    public WalletResponse transfer(Long fromId, Long toId, Integer amount){
+
+        if(fromId.equals(toId)){
+            throw new RuntimeException("Cannot transfer to same wallet");
+        }
+
+        if(amount <= 0){
+            throw new RuntimeException("Transfer amount must be greater than zero");
+        }
 
         Wallet fromWallet = findWallet(fromId);
         Wallet toWallet = findWallet(toId);
 
-        if (fromWallet.getBalance() < amount) {
+        if(fromWallet.getBalance() < amount){
             throw new RuntimeException("Insufficient balance");
         }
+
         fromWallet.setBalance(fromWallet.getBalance() - amount);
         toWallet.setBalance(toWallet.getBalance() + amount);
 
         return mapToResponse(fromWallet);
-    }
-    private void validateTransfer(Long fromId, Long toId, Integer amount){
-
-        if (fromId.equals(toId)) {
-            throw new RuntimeException("Cannot transfer to the same wallet");
-        }
-
-        if (amount <= 0) {
-            throw new RuntimeException("Amount must be greater than zero");
-        }
     }
 
 }
