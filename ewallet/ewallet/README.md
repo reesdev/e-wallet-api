@@ -18,6 +18,14 @@ Simple REST API for managing digital wallet transactions using Spring Boot.
 * MySQL / H2
 * Maven
 
+## Database Setup
+
+Create MySQL database:
+
+CREATE DATABASE ewallet;
+
+Update database configuration in application.properties if needed.
+
 ## API Endpoints
 
 Create Wallet
